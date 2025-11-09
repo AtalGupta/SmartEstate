@@ -7,7 +7,7 @@ An industry-style implementation of the SmartSense AI/ML-II case study covering:
 3. **Phase 3:** LangGraph agents (router, planner, recall, SQL, RAG, renovation, report) backed by multi-layer memory and an Ollama LLM. 
 4. **Phase 4:** FastAPI backend + Streamlit UI + Docker Compose deployment (db, es, ollama, api, ui).
 
-![System Architecture](docs/System%20architecture.png)
+![System Architecture](docs/System_Architecture.png)
 
 ---
 
