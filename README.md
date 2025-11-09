@@ -49,10 +49,10 @@ uv sync # auto sync dependencies from .toml file to venv
 # Ensure OCR weights exist
 uv run python scripts/prepare_easyocr_models.py
 
-# Optional: create inference-only weights (~faster load)
-uv run python scripts/convert_checkpoint_to_inference.py \
-  --input kaggle/working/models/best_model.pth \
-  --output kaggle/working/models/floorplan_model_inference.pth
+uv pip freeze > requirements.txt ## keep requirements.txt updated
+
+# Install from requirements.txt
+uv pip install -r requirements.txt
 ```
 
 ### Docker (recommended deployment)
