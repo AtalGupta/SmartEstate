@@ -1,0 +1,75 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: smartestate
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  api:
+    build: .
+    depends_on:
+      - db
+      - es
+      - ollama
+    command: ["/app/.venv/bin/uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/smartestate
+      ELASTICSEARCH_URL: http://es:9200
+      ELASTICSEARCH_INDEX: properties
+      MODEL_DIR: /app/kaggle/working
+      OCR_LANGS: '["en"]'
+      OCR_MODEL_DIR: /app/models/easyocr
+      EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
+      OLLAMA_BASE_URL: http://ollama:11434
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./outputs:/app/outputs
+      - ./kaggle/working:/app/kaggle/working
+      - ./models/easyocr:/app/models/easyocr
+      - ./assets:/app/assets
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  ui:
+    build: .
+    depends_on:
+      - api
+    environment:
+      API_BASE: http://host.docker.internal:8000
+    command: ["/app/.venv/bin/streamlit", "run", "streamlit_app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./outputs:/app/outputs
+      - ./kaggle/working:/app/kaggle/working
+      - ./models/easyocr:/app/models/easyocr
+      - ./assets:/app/assets
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  db_data:
+  es_data:
+  ollama_data:

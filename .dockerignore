@@ -1,0 +1,25 @@
+.git
+.gitignore
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.cache/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+node_modules/
+
+# Large data and artifacts — exclude from build context
+assets/
+kaggle/
+models/
+outputs/
+*.ipynb
+*.pth
+*.pt
+*.onnx
+
+# Editor/AI configs
+.claude/

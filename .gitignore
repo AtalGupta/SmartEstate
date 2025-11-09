@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.claude
+.pytest_cache 
+assets 
+models 
+outputs 
+case_study.txt 
+DEMO_GUIDE.md 
+.python-version 
