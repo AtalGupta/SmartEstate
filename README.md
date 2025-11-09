@@ -37,9 +37,14 @@ Artifacts required for submission are under version control (`kaggle/working/` f
 
 ```bash
 # Install dependencies (uv preferred)
-uv sync
-# or pip
-pip install -r requirements.txt
+# Install uv (once) if you don't already have it:
+Linux/macOS: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+Windows (PowerShell): powershell -c "irm https://astral.sh/uv/install.ps1 | more"
+
+uv venv # create virtual environment
+
+uv sync # auto sync dependencies from .toml file to venv 
 
 # Ensure OCR weights exist
 uv run python scripts/prepare_easyocr_models.py
@@ -98,11 +103,14 @@ All answers cite property IDs and originate from either Postgres (structured) or
 ## Testing
 
 ```bash
-uv run pytest -q                  # unit tests (offline)
-RUN_PHASE2_SMOKE_TEST=1 uv run pytest -q   # includes ETL + DB/ES integration
+# Default unit suites (Phase 1/2 utils + Phase 3 graph components)
+uv run python scripts/run_tests.py
+
+# Include integration smoke test (requires Postgres + Elasticsearch + Ollama)
+uv run python scripts/run_tests.py --integration
 ```
 
-The suite covers Phase 1 parser smoke tests, Phase 2 utilities, LangGraph router/planner logic, and memory helpers.
+Under the hood this runs the existing pytest suites that cover the Phase 1 parser smoke test, ETL utilities, and LangGraph router/planner/memory helpers. The script verifies project dependencies up front and will prompt you to run `uv sync` if anything is missing. Pass `--suite path/to/test.py` to target a specific file or folder, and `-v`/`-x` to change verbosity or stop on first failure.
 
 ---
 
